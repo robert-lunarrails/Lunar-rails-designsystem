@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lunar Rails — Design System</title>
+<link rel="preconnect" href="https://api.fontshare.com"/>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,600,500,400,300&display=swap" rel="stylesheet"/>
+<style>
+/* ─────────────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────────────── */
+:root {
+  --primitive-purple:       #7F21FF;
+  --primitive-dark-purple:  #320065;
+  --primitive-pink:         #FF569D;
+  --primitive-yellow:       #FFBA0D;
+  --primitive-magenta:      #D83CB9;
+
+  --color-bg-page:          #0A0A0A;
+  --color-bg-surface:       #111111;
+  --color-bg-elevated:      #181818;
+  --color-bg-overlay:       rgba(0,0,0,0.75);
+
+  --color-text-primary:     #FFFFFF;
+  --color-text-secondary:   #A0A0B0;
+  --color-text-muted:       #5C5C72;
+
+  --color-accent-primary:   #7F21FF;
+  --color-accent-pink:      #FF569D;
+  --color-accent-yellow:    #FFBA0D;
+  --color-accent-magenta:   #D83CB9;
+  --color-accent-dark:      #320065;
+
+  --gradient-brand:         linear-gradient(90deg, #7F21FF 0%, #FF569D 55%, #FFBA0D 100%);
+  --gradient-brand-r:       linear-gradient(135deg, #7F21FF 0%, #FF569D 55%, #FFBA0D 100%);
+  --gradient-glow-purple:   radial-gradient(circle, rgba(127,33,255,.35) 0%, transparent 70%);
+  --gradient-page-hero:     radial-gradient(ellipse 80% 60% at 50% 0%, rgba(127,33,255,.18) 0%, transparent 70%);
+
+  --color-border-subtle:    rgba(255,255,255,.06);
+  --color-border-default:   rgba(255,255,255,.10);
+  --color-border-strong:    rgba(255,255,255,.18);
+  --color-border-accent:    rgba(127,33,255,.50);
+
+  --color-success:          #22C55E;
+  --color-warning:          #FFBA0D;
+  --color-error:            #EF4444;
+
+  --font-primary:           'Satoshi', sans-serif;
+  --font-mono:              'JetBrains Mono','Fira Code',monospace;
+
+  --text-hero:   clamp(42px, 7vw, 88px);
+  --text-h1:     clamp(32px, 5vw, 60px);
+  --text-h2:     clamp(24px, 3.5vw, 42px);
+  --text-h3:     clamp(20px, 2.5vw, 30px);
+  --text-h4:     clamp(16px, 2vw, 22px);
+  --text-lg:     18px;
+  --text-base:   16px;
+  --text-sm:     14px;
+  --text-xs:     12px;
+
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --leading-tight:   1.1;
+  --leading-snug:    1.25;
+  --leading-normal:  1.55;
+  --leading-relaxed: 1.75;
+
+  --tracking-wide:   0.08em;
+  --tracking-tight:  -0.02em;
+
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+  --space-5:20px; --space-6:24px; --space-8:32px; --space-10:40px;
+  --space-12:48px; --space-16:64px; --space-20:80px; --space-24:96px;
+
+  --radius-sm:4px; --radius-md:8px; --radius-lg:12px;
+  --radius-xl:16px; --radius-2xl:24px; --radius-full:9999px;
+
+  --shadow-glow-purple: 0 0 40px rgba(127,33,255,.4);
+  --shadow-glow-pink:   0 0 30px rgba(255,86,157,.3);
+
+  --ease-spring: cubic-bezier(.16,1,.3,1);
+  --dur-fast:150ms; --dur-base:250ms; --dur-slow:400ms;
+}
+
+/* ─────────────────────────────────────────────
+   RESET + BASE
+───────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-primary);
+  background:var(--color-bg-page);
+  color:var(--color-text-primary);
+  line-height:var(--leading-normal);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(127,33,255,.35);color:#fff}
+
+/* ─────────────────────────────────────────────
+   BACKGROUND GRID
+───────────────────────────────────────────── */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(127,33,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(127,33,255,.025) 1px,transparent 1px);
+  background-size:64px 64px;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ─────────────────────────────────────────────
+   NAV
+───────────────────────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,10,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--color-border-subtle);
+  padding:0 clamp(24px,5vw,80px);
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{
+  font-size:15px;font-weight:var(--weight-bold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  background:var(--gradient-brand);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-decoration:none;
+}
+.nav-links{display:flex;gap:var(--space-8);list-style:none}
+.nav-links a{
+  font-size:var(--text-sm);font-weight:var(--weight-medium);
+  color:var(--color-text-secondary);text-decoration:none;
+  transition:color var(--dur-fast) ease;
+}
+.nav-links a:hover{color:var(--color-text-primary)}
+.nav-cta{
+  font-family:var(--font-primary);font-weight:var(--weight-semibold);
+  font-size:var(--text-xs);letter-spacing:var(--tracking-wide);
+  text-transform:uppercase;background:var(--gradient-brand);
+  color:#fff;border:none;border-radius:var(--radius-md);
+  padding:8px 20px;cursor:pointer;
+  box-shadow:0 0 20px rgba(127,33,255,.3);
+  transition:box-shadow var(--dur-base) var(--ease-spring),transform var(--dur-base) var(--ease-spring);
+}
+.nav-cta:hover{box-shadow:var(--shadow-glow-purple);transform:translateY(-1px)}
+
+/* ─────────────────────────────────────────────
+   LAYOUT
+───────────────────────────────────────────── */
+.page{position:relative;z-index:1}
+.container{max-width:1200px;margin:0 auto;padding:0 clamp(24px,5vw,80px)}
+.section{padding:var(--space-24) 0}
+.section+.section{border-top:1px solid var(--color-border-subtle)}
+
+/* ─────────────────────────────────────────────
+   SECTION LABELS
+───────────────────────────────────────────── */
+.section-label{
+  display:inline-flex;align-items:center;gap:var(--space-2);
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  color:var(--color-accent-pink);
+  margin-bottom:var(--space-4);
+}
+.section-label::before{
+  content:'';display:block;width:20px;height:1px;
+  background:var(--gradient-brand);
+}
+.section-title{
+  font-size:var(--text-h2);font-weight:var(--weight-bold);
+  letter-spacing:var(--tracking-tight);
+  line-height:var(--leading-snug);
+  margin-bottom:var(--space-4);
+}
+.section-desc{
+  font-size:var(--text-lg);font-weight:var(--weight-light);
+  color:var(--color-text-secondary);
+  max-width:600px;line-height:var(--leading-relaxed);
+  margin-bottom:var(--space-12);
+}
+
+/* ─────────────────────────────────────────────
+   HERO
+───────────────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:flex-start;
+  padding:clamp(80px,12vh,140px) clamp(24px,5vw,80px);
+  max-width:1200px;margin:0 auto;
+  position:relative;
+}
+.hero-glow{
+  position:absolute;top:-10%;left:-5%;
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(127,33,255,.15) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-glow-2{
+  position:absolute;bottom:10%;right:0;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(255,86,157,.1) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--color-text-muted);margin-bottom:var(--space-6);
+  display:flex;align-items:center;gap:var(--space-3);
+}
+.hero-eyebrow::before{
+  content:'';width:32px;height:1px;
+  background:var(--gradient-brand);display:block;
+}
+.hero-title{
+  font-size:var(--text-hero);font-weight:var(--weight-bold);
+  letter-spacing:var(--tracking-tight);line-height:var(--leading-tight);
+  background:var(--gradient-brand);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:var(--space-6);
+}
+.hero-sub{
+  font-size:var(--text-lg);font-weight:var(--weight-light);
+  color:var(--color-text-secondary);
+  max-width:560px;line-height:var(--leading-relaxed);
+  margin-bottom:var(--space-10);
+}
+.hero-badges{display:flex;flex-wrap:wrap;gap:var(--space-3)}
+.badge{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  padding:6px 14px;border-radius:var(--radius-full);
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--color-border-default);
+  color:var(--color-text-secondary);
+}
+.hero-scroll{
+  position:absolute;bottom:40px;left:clamp(24px,5vw,80px);
+  font-size:var(--text-xs);color:var(--color-text-muted);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  display:flex;align-items:center;gap:var(--space-3);
+}
+.hero-scroll::after{
+  content:'';width:1px;height:40px;
+  background:linear-gradient(to bottom,var(--color-text-muted),transparent);
+}
+
+/* ─────────────────────────────────────────────
+   TOC
+───────────────────────────────────────────── */
+.toc{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:var(--space-3);
+}
+.toc-item{
+  display:flex;align-items:center;gap:var(--space-3);
+  padding:var(--space-4) var(--space-5);
+  background:var(--color-bg-surface);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-lg);
+  text-decoration:none;
+  color:var(--color-text-secondary);
+  font-size:var(--text-sm);font-weight:var(--weight-medium);
+  transition:border-color var(--dur-base) ease,color var(--dur-base) ease,box-shadow var(--dur-base) ease;
+}
+.toc-item:hover{
+  border-color:var(--color-border-accent);
+  color:var(--color-text-primary);
+  box-shadow:var(--shadow-glow-purple);
+}
+.toc-num{
+  font-size:var(--text-xs);font-weight:var(--weight-bold);
+  font-family:var(--font-mono);
+  background:var(--gradient-brand);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  min-width:24px;
+}
+
+/* ─────────────────────────────────────────────
+   BRAND OVERVIEW
+───────────────────────────────────────────── */
+.brand-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6);
+}
+.brand-card{
+  background:var(--color-bg-surface);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-xl);
+  padding:var(--space-8);
+}
+.brand-card-label{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  color:var(--color-text-muted);margin-bottom:var(--space-5);
+}
+.info-row{
+  display:flex;gap:var(--space-4);
+  padding:var(--space-3) 0;
+  border-bottom:1px solid var(--color-border-subtle);
+  font-size:var(--text-sm);
+}
+.info-row:last-child{border-bottom:none}
+.info-key{
+  color:var(--color-text-muted);font-weight:var(--weight-medium);
+  min-width:130px;flex-shrink:0;
+}
+.info-val{color:var(--color-text-primary)}
+.personality-tags{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-2)}
+.p-tag{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:0.06em;text-transform:uppercase;
+  padding:5px 14px;border-radius:var(--radius-full);
+  background:rgba(127,33,255,.1);
+  border:1px solid rgba(127,33,255,.3);
+  color:rgba(190,140,255,.9);
+}
+.voice-list{list-style:none;display:flex;flex-direction:column;gap:var(--space-3)}
+.voice-list li{
+  display:flex;gap:var(--space-3);
+  font-size:var(--text-sm);color:var(--color-text-secondary);
+  line-height:var(--leading-relaxed);
+}
+.voice-list li::before{
+  content:'→';
+  color:var(--color-accent-pink);
+  flex-shrink:0;font-weight:var(--weight-bold);
+}
+
+/* ─────────────────────────────────────────────
+   COLOR SYSTEM
+───────────────────────────────────────────── */
+.gradient-showcase{
+  height:12px;border-radius:var(--radius-full);
+  background:var(--gradient-brand);
+  margin-bottom:var(--space-8);
+  position:relative;
+}
+.gradient-showcase-labels{
+  display:flex;justify-content:space-between;
+  font-size:var(--text-xs);font-family:var(--font-mono);
+  color:var(--color-text-muted);
+  margin-top:var(--space-2);
+  margin-bottom:var(--space-10);
+}
+.swatches-primary{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4);
+  margin-bottom:var(--space-8);
+}
+.swatch{overflow:hidden;border-radius:var(--radius-lg)}
+.swatch-color{height:80px;width:100%}
+.swatch-info{
+  padding:var(--space-3) var(--space-4);
+  background:var(--color-bg-elevated);
+}
+.swatch-name{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  color:var(--color-text-primary);margin-bottom:2px;
+}
+.swatch-hex{
+  font-size:var(--text-xs);font-family:var(--font-mono);
+  color:var(--color-text-muted);
+}
+.swatch-token{
+  font-size:10px;font-family:var(--font-mono);
+  color:rgba(127,33,255,.8);margin-top:3px;
+}
+.color-tokens-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);
+}
+.token-row{
+  display:flex;align-items:center;gap:var(--space-3);
+  padding:var(--space-3) var(--space-4);
+  background:var(--color-bg-surface);
+  border:1px solid var(--color-border-subtle);
+  border-radius:var(--radius-md);
+}
+.token-dot{
+  width:12px;height:12px;border-radius:var(--radius-sm);flex-shrink:0;
+}
+.token-name{
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--color-text-secondary);flex:1;
+}
+.token-val{
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--color-text-muted);
+}
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:var(--space-8)}
+.rule{
+  display:flex;align-items:flex-start;gap:var(--space-3);
+  padding:var(--space-4);
+  background:var(--color-bg-surface);
+  border-radius:var(--radius-md);
+  font-size:var(--text-sm);color:var(--color-text-secondary);
+  line-height:var(--leading-relaxed);
+}
+.rule.do{border-left:2px solid var(--color-success)}
+.rule.dont{border-left:2px solid var(--color-error)}
+.rule-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+
+/* ─────────────────────────────────────────────
+   TYPOGRAPHY
+───────────────────────────────────────────── */
+.type-showcase{
+  background:var(--color-bg-surface);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-2xl);
+  overflow:hidden;
+  margin-bottom:var(--space-8);
+}
+.type-row{
+  padding:var(--space-8) var(--space-10);
+  border-bottom:1px solid var(--color-border-subtle);
+  display:grid;grid-template-columns:160px 1fr;
+  align-items:center;gap:var(--space-8);
+}
+.type-row:last-child{border-bottom:none}
+.type-meta{
+  font-size:var(--text-xs);font-family:var(--font-mono);
+  color:var(--color-text-muted);line-height:1.8;
+}
+.type-meta strong{display:block;color:var(--color-accent-pink);margin-bottom:2px}
+.type-sample-hero{
+  font-size:clamp(32px,5vw,64px);font-weight:700;
+  letter-spacing:-.02em;line-height:1.05;
+  background:var(--gradient-brand);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.type-sample-h2{font-size:clamp(22px,3vw,36px);font-weight:700;line-height:1.2}
+.type-sample-h3{font-size:clamp(18px,2.5vw,28px);font-weight:500;line-height:1.25;color:var(--color-text-secondary)}
+.type-sample-body{font-size:16px;font-weight:300;line-height:1.75;color:var(--color-text-secondary)}
+.type-sample-label{
+  font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--color-text-muted);
+}
+.type-sample-mono{
+  font-family:var(--font-mono);font-size:14px;
+  color:var(--color-accent-primary);
+}
+.scale-table{
+  display:grid;gap:var(--space-3);
+}
+.scale-row{
+  display:grid;grid-template-columns:160px 1fr auto;
+  align-items:center;gap:var(--space-6);
+  padding:var(--space-3) var(--space-5);
+  background:var(--color-bg-surface);
+  border:1px solid var(--color-border-subtle);
+  border-radius:var(--radius-md);
+}
+.scale-token{font-family:var(--font-mono);font-size:11px;color:var(--color-accent-primary)}
+.scale-val{font-family:var(--font-mono);font-size:11px;color:var(--color-text-muted);text-align:right}
+
+/* ─────────────────────────────────────────────
+   SPACING
+───────────────────────────────────────────── */
+.spacing-viz{
+  display:flex;flex-direction:column;gap:var(--space-3);
+  margin-bottom:var(--space-8);
+}
+.space-row{
+  display:grid;grid-template-columns:120px auto 1fr 80px;
+  align-items:center;gap:var(--space-6);
+}
+.space-token{font-family:var(--font-mono);font-size:11px;color:var(--color-accent-primary)}
+.space-bar-wrap{
+  height:16px;display:flex;align-items:center;
+}
+.space-bar{
+  height:8px;border-radius:var(--radius-full);
+  background:var(--gradient-brand);
+  min-width:4px;
+}
+.space-px{font-family:var(--font-mono);font-size:11px;color:var(--color-text-muted);text-align:right}
+.radius-showcase{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  gap:var(--space-4);margin-bottom:var(--space-8);
+}
+.radius-item{display:flex;flex-direction:column;align-items:center;gap:var(--space-3)}
+.radius-box{
+  width:60px;height:60px;
+  background:rgba(127,33,255,.15);
+  border:1px solid var(--color-border-accent);
+}
+.radius-label{font-family:var(--font-mono);font-size:10px;color:var(--color-text-muted);text-align:center}
+
+/* ─────────────────────────────────────────────
+   COMPONENTS
+───────────────────────────────────────────── */
+.component-section{
+  display:grid;gap:var(--space-8);
+}
+.component-block{
+  background:var(--color-bg-surface);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-xl);
+  overflow:hidden;
+}
+.component-header{
+  padding:var(--space-4) var(--space-6);
+  border-bottom:1px solid var(--color-border-subtle);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.component-name{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  color:var(--color-text-muted);
+}
+.component-body{padding:var(--space-8) var(--space-8)}
+/* Buttons */
+.btn{
+  font-family:var(--font-primary);font-weight:var(--weight-semibold);
+  font-size:var(--text-xs);letter-spacing:var(--tracking-wide);
+  text-transform:uppercase;border-radius:var(--radius-md);
+  padding:11px 24px;border:none;cursor:pointer;
+  transition:all var(--dur-base) var(--ease-spring);
+  position:relative;overflow:hidden;
+}
+.btn-primary{
+  background:var(--gradient-brand);color:#fff;
+  box-shadow:0 0 20px rgba(127,33,255,.3);
+}
+.btn-primary:hover{
+  box-shadow:var(--shadow-glow-purple);transform:translateY(-2px);
+}
+.btn-secondary{
+  background:transparent;color:var(--color-text-primary);
+  border:1px solid var(--color-border-strong);
+}
+.btn-secondary:hover{
+  border-color:var(--color-accent-primary);
+  background:rgba(127,33,255,.08);
+}
+.btn-ghost{
+  background:transparent;color:var(--color-accent-pink);
+  border:none;text-decoration:underline;text-underline-offset:4px;
+}
+.btn-row{display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:center}
+/* Cards */
+.card{
+  background:var(--color-bg-elevated);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-xl);padding:var(--space-6);
+  transition:border-color var(--dur-base) ease,box-shadow var(--dur-base) ease;
+}
+.card:hover{border-color:var(--color-border-accent);box-shadow:var(--shadow-glow-purple)}
+.card-feat{
+  background:linear-gradient(135deg,rgba(127,33,255,.12) 0%,rgba(50,0,101,.3) 100%);
+  border:1px solid var(--color-border-accent);
+}
+.card-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4)}
+.card-icon{font-size:24px;margin-bottom:var(--space-3)}
+.card-title{font-size:var(--text-h4);font-weight:var(--weight-semibold);margin-bottom:var(--space-2)}
+.card-body{font-size:var(--text-sm);color:var(--color-text-secondary);line-height:var(--leading-relaxed)}
+/* Input */
+.input-demo{
+  display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);
+}
+.field{display:flex;flex-direction:column;gap:var(--space-2)}
+.field label{font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-muted)}
+.input{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-md);padding:11px 14px;
+  color:var(--color-text-primary);font-family:var(--font-primary);
+  font-size:var(--text-base);width:100%;
+  transition:border-color var(--dur-fast) ease,box-shadow var(--dur-fast) ease;
+  outline:none;
+}
+.input::placeholder{color:var(--color-text-muted)}
+.input:focus{
+  border-color:var(--color-accent-primary);
+  box-shadow:0 0 0 3px rgba(127,33,255,.15);
+}
+/* Stats */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--color-bg-elevated);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-xl);overflow:hidden;
+}
+.stat{
+  padding:var(--space-8) var(--space-6);
+  text-align:center;
+  border-right:1px solid var(--color-border-subtle);
+}
+.stat:last-child{border-right:none}
+.stat-num{
+  font-size:clamp(28px,4vw,48px);font-weight:var(--weight-bold);
+  background:var(--gradient-brand);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  line-height:1.05;margin-bottom:var(--space-2);
+}
+.stat-lbl{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  color:var(--color-text-muted);
+}
+/* Nav demo */
+.nav-demo{
+  background:rgba(10,10,10,.85);backdrop-filter:blur(16px);
+  border:1px solid var(--color-border-subtle);
+  border-radius:var(--radius-lg);padding:0 var(--space-6);
+  height:54px;display:flex;align-items:center;
+  justify-content:space-between;
+}
+.nav-demo-logo{
+  font-size:13px;font-weight:var(--weight-bold);letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  background:var(--gradient-brand);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-demo-links{display:flex;gap:var(--space-6);list-style:none}
+.nav-demo-links li{font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--color-text-secondary);cursor:pointer}
+/* Gradient text block */
+.gradient-text-demo{
+  font-size:clamp(28px,4vw,56px);font-weight:var(--weight-bold);
+  letter-spacing:var(--tracking-tight);line-height:var(--leading-tight);
+  background:var(--gradient-brand);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+/* Divider demo */
+.divider-brand{height:1px;background:var(--gradient-brand);border:none;opacity:.4}
+
+/* ─────────────────────────────────────────────
+   MOTION
+───────────────────────────────────────────── */
+.motion-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-8)}
+.motion-card{
+  background:var(--color-bg-surface);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-xl);padding:var(--space-6);
+  text-align:center;
+}
+.motion-label{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  color:var(--color-text-muted);margin-bottom:var(--space-4);
+}
+.motion-value{
+  font-family:var(--font-mono);font-size:var(--text-sm);
+  color:var(--color-accent-primary);margin-bottom:var(--space-3);
+}
+.motion-desc{font-size:var(--text-xs);color:var(--color-text-muted)}
+.anim-demo{
+  display:flex;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-4);
+}
+.anim-btn{
+  font-family:var(--font-primary);font-size:var(--text-xs);
+  font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);
+  text-transform:uppercase;padding:8px 18px;border-radius:var(--radius-md);
+  background:rgba(127,33,255,.1);border:1px solid var(--color-border-accent);
+  color:rgba(190,140,255,.9);cursor:pointer;
+  transition:all var(--dur-base) ease;
+}
+.anim-btn:hover{background:rgba(127,33,255,.2)}
+.anim-stage{
+  background:var(--color-bg-elevated);
+  border:1px solid var(--color-border-subtle);
+  border-radius:var(--radius-lg);
+  padding:var(--space-8);min-height:120px;
+  display:flex;align-items:center;justify-content:center;gap:var(--space-4);
+  flex-wrap:wrap;
+}
+.anim-box{
+  width:60px;height:60px;border-radius:var(--radius-md);
+  background:var(--gradient-brand);
+  display:flex;align-items:center;justify-content:center;
+  font-size:var(--text-xs);font-weight:var(--weight-bold);
+  color:#fff;opacity:0;transform:translateY(16px);
+}
+.anim-box.visible{
+  opacity:1;transform:translateY(0);
+  transition:opacity var(--dur-slow) var(--ease-spring),transform var(--dur-slow) var(--ease-spring);
+}
+
+/* ─────────────────────────────────────────────
+   VISUAL LANGUAGE
+───────────────────────────────────────────── */
+.motifs-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--space-4);margin-bottom:var(--space-8)}
+.motif-card{
+  background:var(--color-bg-surface);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-xl);
+  padding:var(--space-6) var(--space-4);
+  text-align:center;
+  transition:border-color var(--dur-base) ease,box-shadow var(--dur-base) ease;
+}
+.motif-card:hover{border-color:var(--color-border-accent);box-shadow:var(--shadow-glow-purple)}
+.motif-emoji{font-size:28px;margin-bottom:var(--space-3);display:block}
+.motif-name{font-size:11px;font-weight:var(--weight-semibold);color:var(--color-text-primary);margin-bottom:3px}
+.motif-use{font-size:10px;color:var(--color-text-muted);line-height:1.4}
+.aesthetic-block{
+  background:linear-gradient(135deg,rgba(127,33,255,.1) 0%,rgba(50,0,101,.2) 50%,rgba(10,10,10,0) 100%);
+  border:1px solid var(--color-border-accent);
+  border-radius:var(--radius-2xl);
+  padding:var(--space-10) var(--space-10);
+  margin-bottom:var(--space-8);
+  position:relative;overflow:hidden;
+}
+.aesthetic-block::before{
+  content:'';position:absolute;
+  top:-40px;right:-40px;width:200px;height:200px;
+  background:radial-gradient(circle,rgba(255,86,157,.15) 0%,transparent 70%);
+  pointer-events:none;
+}
+.aesthetic-title{
+  font-size:var(--text-h3);font-weight:var(--weight-bold);
+  background:var(--gradient-brand);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:var(--space-5);
+}
+.aesthetic-desc{
+  font-size:var(--text-base);font-weight:var(--weight-light);
+  color:var(--color-text-secondary);line-height:var(--leading-relaxed);
+  max-width:640px;
+}
+
+/* ─────────────────────────────────────────────
+   PAGE ANATOMY
+───────────────────────────────────────────── */
+.anatomy-diagram{
+  display:grid;gap:2px;max-width:600px;
+}
+.anatomy-zone{
+  padding:var(--space-4) var(--space-6);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-md);
+  display:grid;grid-template-columns:140px 1fr;
+  align-items:center;gap:var(--space-5);
+  background:var(--color-bg-surface);
+  transition:border-color var(--dur-base) ease;
+}
+.anatomy-zone:hover{border-color:var(--color-border-accent)}
+.anatomy-zone-name{
+  font-size:var(--text-xs);font-weight:var(--weight-bold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  color:var(--color-text-primary);
+}
+.anatomy-zone-desc{
+  font-size:var(--text-xs);color:var(--color-text-muted);
+  line-height:var(--leading-relaxed);
+}
+.anatomy-zone.hero-zone{
+  padding:var(--space-6) var(--space-6);
+  background:linear-gradient(135deg,rgba(127,33,255,.08) 0%,rgba(50,0,101,.15) 100%);
+  border-color:var(--color-border-accent);
+}
+
+/* ─────────────────────────────────────────────
+   DO's & DON'Ts
+───────────────────────────────────────────── */
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6)}
+.dd-col{
+  background:var(--color-bg-surface);
+  border-radius:var(--radius-xl);
+  overflow:hidden;
+}
+.dd-header{
+  padding:var(--space-5) var(--space-6);
+  font-size:var(--text-sm);font-weight:var(--weight-semibold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  display:flex;align-items:center;gap:var(--space-3);
+}
+.dd-header.do{background:rgba(34,197,94,.1);color:var(--color-success);border-bottom:1px solid rgba(34,197,94,.2)}
+.dd-header.dont{background:rgba(239,68,68,.1);color:var(--color-error);border-bottom:1px solid rgba(239,68,68,.2)}
+.dd-list{list-style:none;padding:var(--space-5) var(--space-6);display:flex;flex-direction:column;gap:var(--space-4)}
+.dd-list li{
+  font-size:var(--text-sm);color:var(--color-text-secondary);
+  line-height:var(--leading-relaxed);
+  display:flex;gap:var(--space-3);align-items:flex-start;
+}
+.dd-list.do li::before{content:'✓';color:var(--color-success);font-weight:var(--weight-bold);flex-shrink:0}
+.dd-list.dont li::before{content:'✕';color:var(--color-error);font-weight:var(--weight-bold);flex-shrink:0}
+
+/* ─────────────────────────────────────────────
+   COPY + TECH
+───────────────────────────────────────────── */
+.copy-table{width:100%;border-collapse:collapse}
+.copy-table th{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  color:var(--color-text-muted);
+  padding:var(--space-3) var(--space-5);
+  border-bottom:1px solid var(--color-border-default);
+  text-align:left;
+}
+.copy-table td{
+  font-size:var(--text-sm);color:var(--color-text-secondary);
+  padding:var(--space-4) var(--space-5);
+  border-bottom:1px solid var(--color-border-subtle);
+  vertical-align:top;
+  line-height:var(--leading-relaxed);
+}
+.copy-table td:first-child{
+  color:var(--color-text-muted);font-weight:var(--weight-medium);
+  white-space:nowrap;min-width:150px;
+}
+.copy-table td code{
+  font-family:var(--font-mono);font-size:12px;
+  color:var(--color-accent-pink);
+  background:rgba(255,86,157,.08);
+  padding:2px 6px;border-radius:4px;
+}
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4)}
+.tech-card{
+  background:var(--color-bg-surface);
+  border:1px solid var(--color-border-default);
+  border-radius:var(--radius-lg);
+  padding:var(--space-5) var(--space-6);
+}
+.tech-layer{
+  font-size:var(--text-xs);font-weight:var(--weight-semibold);
+  letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  color:var(--color-text-muted);margin-bottom:var(--space-2);
+}
+.tech-value{font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-primary)}
+.tech-sub{font-size:11px;color:var(--color-text-muted);margin-top:3px}
+
+/* ─────────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────────── */
+.footer{
+  border-top:1px solid var(--color-border-subtle);
+  padding:var(--space-12) 0;
+  text-align:center;
+}
+.footer-logo{
+  font-size:18px;font-weight:var(--weight-bold);letter-spacing:var(--tracking-wide);text-transform:uppercase;
+  background:var(--gradient-brand);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  display:inline-block;margin-bottom:var(--space-4);
+}
+.footer-desc{
+  font-size:var(--text-sm);color:var(--color-text-muted);
+  margin-bottom:var(--space-4);max-width:480px;margin-left:auto;margin-right:auto;
+}
+.footer-legal{font-size:11px;color:var(--color-text-muted);opacity:.5}
+
+/* ─────────────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(127,33,255,.3)}50%{box-shadow:0 0 50px rgba(127,33,255,.6)}}
+
+.animate-in{opacity:0;animation:fadeUp .6s var(--ease-spring) forwards}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}
+.delay-3{animation-delay:.3s}.delay-4{animation-delay:.4s}
+
+/* ─────────────────────────────────────────────
+   CODE BLOCKS
+───────────────────────────────────────────── */
+.code-block{
+  background:#080808;
+  border:1px solid var(--color-border-subtle);
+  border-radius:var(--radius-lg);
+  padding:var(--space-5) var(--space-6);
+  margin-top:var(--space-4);
+  overflow-x:auto;
+}
+.code-block pre{
+  font-family:var(--font-mono);font-size:12px;
+  color:#c9d1d9;line-height:1.7;margin:0;
+  white-space:pre;
+}
+.kw{color:#ff7b72}.str{color:#a5d6ff}.cm{color:#5c5c72}.fn{color:#d2a8ff}
+.prop{color:#79c0ff}.val{color:#FFBA0D}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media(max-width:900px){
+  .brand-grid,.swatches-primary,.card-grid,.dd-grid,.tech-grid{grid-template-columns:1fr 1fr}
+  .motifs-grid{grid-template-columns:repeat(3,1fr)}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stat:nth-child(2){border-right:none}
+  .motion-grid{grid-template-columns:1fr}
+  .type-row{grid-template-columns:1fr;gap:var(--space-3)}
+  .nav-links{display:none}
+}
+@media(max-width:600px){
+  .brand-grid,.swatches-primary,.card-grid,.dd-grid,.tech-grid,.color-tokens-grid,.scale-row,.space-row{grid-template-columns:1fr}
+  .motifs-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-row{grid-template-columns:1fr}
+  .stat{border-right:none;border-bottom:1px solid var(--color-border-subtle)}
+  .radius-showcase{grid-template-columns:repeat(3,1fr)}
+  .input-demo{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="#">☾ Lunar Rails</a>
+  <ul class="nav-links">
+    <li><a href="#colors">Colors</a></li>
+    <li><a href="#typography">Typography</a></li>
+    <li><a href="#components">Components</a></li>
+    <li><a href="#motion">Motion</a></li>
+    <li><a href="#rules">Rules</a></li>
+  </ul>
+  <button class="nav-cta" onclick="window.open('https://www.lunarrails.io','_blank')">Launch →</button>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section>
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-glow-2"></div>
+    <div class="hero-eyebrow animate-in">Design System · AI Context Guide</div>
+    <h1 class="hero-title animate-in delay-1">Building<br/>Moonshots</h1>
+    <p class="hero-sub animate-in delay-2">The single source of truth for all Lunar Rails UI decisions. Use this as AI context when vibe coding any product, page, or component.</p>
+    <div class="hero-badges animate-in delay-3">
+      <span class="badge">Satoshi Typeface</span>
+      <span class="badge">Dark Only</span>
+      <span class="badge">React + Next.js</span>
+      <span class="badge">v1.0.0</span>
+      <span class="badge">Blockchain & OTC</span>
+    </div>
+    <div class="hero-scroll">Scroll to explore</div>
+  </div>
+</section>
+
+<!-- TABLE OF CONTENTS -->
+<section class="section" id="toc">
+  <div class="container">
+    <div class="section-label">Navigation</div>
+    <h2 class="section-title">Design System Sections</h2>
+    <div class="toc">
+      <a href="#brand" class="toc-item"><span class="toc-num">01</span>Brand Overview</a>
+      <a href="#colors" class="toc-item"><span class="toc-num">02</span>Color System</a>
+      <a href="#typography" class="toc-item"><span class="toc-num">03</span>Typography</a>
+      <a href="#spacing" class="toc-item"><span class="toc-num">04</span>Spacing & Layout</a>
+      <a href="#components" class="toc-item"><span class="toc-num">05</span>Components</a>
+      <a href="#motion" class="toc-item"><span class="toc-num">06</span>Motion & Animation</a>
+      <a href="#visual" class="toc-item"><span class="toc-num">07</span>Visual Language</a>
+      <a href="#anatomy" class="toc-item"><span class="toc-num">08</span>Page Anatomy</a>
+      <a href="#rules" class="toc-item"><span class="toc-num">09</span>AI Do's & Don'ts</a>
+      <a href="#copy" class="toc-item"><span class="toc-num">10</span>Copy & Messaging</a>
+      <a href="#tech" class="toc-item"><span class="toc-num">11</span>Tech Stack</a>
+    </div>
+  </div>
+</section>
+
+<!-- 01 BRAND -->
+<section class="section" id="brand">
+  <div class="container">
+    <div class="section-label">01 — Brand</div>
+    <h2 class="section-title">Brand Overview</h2>
+    <p class="section-desc">Advanced Software Solutions for Blockchain & OTC Trading, headquartered in Dubai.</p>
+    <div class="brand-grid">
+      <div class="brand-card">
+        <div class="brand-card-label">Identity</div>
+        <div class="info-row"><span class="info-key">Brand</span><span class="info-val">Lunar Rails</span></div>
+        <div class="info-row"><span class="info-key">Legal Entity</span><span class="info-val">OTC Services DMCC</span></div>
+        <div class="info-row"><span class="info-key">Location</span><span class="info-val">Dubai, UAE</span></div>
+        <div class="info-row"><span class="info-key">Tagline</span><span class="info-val">"Building Moonshots"</span></div>
+        <div class="info-row"><span class="info-key">Category</span><span class="info-val">Blockchain & OTC Trading</span></div>
+        <div class="info-row"><span class="info-key">Website</span><span class="info-val"><a href="https://www.lunarrails.io" style="color:var(--color-accent-primary);text-decoration:none" target="_blank">lunarrails.io</a></span></div>
+        <br/>
+        <div class="brand-card-label">Brand Personality</div>
+        <div class="personality-tags">
+          <span class="p-tag">Bold</span>
+          <span class="p-tag">Technical</span>
+          <span class="p-tag">Professional</span>
+          <span class="p-tag">Visionary</span>
+          <span class="p-tag">Transparent</span>
+        </div>
+      </div>
+      <div class="brand-card">
+        <div class="brand-card-label">Tone of Voice</div>
+        <ul class="voice-list">
+          <li>Write with <strong>authority and precision</strong> — serious product for serious professionals</li>
+          <li>Be <strong>direct and confident</strong> — short sentences, active voice, no buzzwords</li>
+          <li>Use space metaphors sparingly: "launch", "mission", "moonshot"</li>
+          <li>Maintain <strong>transparency</strong> — explain what things do, not just what they are</li>
+        </ul>
+        <br/>
+        <div class="brand-card-label">Services</div>
+        <ul class="voice-list">
+          <li>Blockchain Analytics</li>
+          <li>Lightning Network Technology</li>
+          <li>Software Development</li>
+          <li>Consulting & Cost Control</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 COLORS -->
+<section class="section" id="colors">
+  <div class="container">
+    <div class="section-label">02 — Colors</div>
+    <h2 class="section-title">Color System</h2>
+    <p class="section-desc">Always use CSS tokens. Never hardcode hex values in components.</p>
+
+    <div class="section-label" style="margin-top:0">Signature Gradient</div>
+    <div class="gradient-showcase"></div>
+    <div class="gradient-showcase-labels">
+      <span>#7F21FF — Purple (0%)</span>
+      <span>#FF569D — Pink (55%)</span>
+      <span>#FFBA0D — Yellow (100%)</span>
+    </div>
+
+    <div class="section-label">Brand Palette</div>
+    <div class="swatches-primary">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#7F21FF"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Purple</div>
+          <div class="swatch-hex">#7F21FF</div>
+          <div class="swatch-token">--color-accent-primary</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#320065"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Dark Purple</div>
+          <div class="swatch-hex">#320065</div>
+          <div class="swatch-token">--color-accent-dark</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FF569D"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Pink</div>
+          <div class="swatch-hex">#FF569D</div>
+          <div class="swatch-token">--color-accent-pink</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FFBA0D"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Yellow</div>
+          <div class="swatch-hex">#FFBA0D</div>
+          <div class="swatch-token">--color-accent-yellow</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#D83CB9"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Magenta</div>
+          <div class="swatch-hex">#D83CB9</div>
+          <div class="swatch-token">--color-accent-magenta</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Semantic & Background Tokens</div>
+    <div class="color-tokens-grid">
+      <div class="token-row"><div class="token-dot" style="background:#0A0A0A;border:1px solid rgba(255,255,255,.2)"></div><span class="token-name">--color-bg-page</span><span class="token-val">#0A0A0A</span></div>
+      <div class="token-row"><div class="token-dot" style="background:#111111;border:1px solid rgba(255,255,255,.15)"></div><span class="token-name">--color-bg-surface</span><span class="token-val">#111111</span></div>
+      <div class="token-row"><div class="token-dot" style="background:#FFFFFF"></div><span class="token-name">--color-text-primary</span><span class="token-val">#FFFFFF</span></div>
+      <div class="token-row"><div class="token-dot" style="background:#A0A0B0"></div><span class="token-name">--color-text-secondary</span><span class="token-val">#A0A0B0</span></div>
+      <div class="token-row"><div class="token-dot" style="background:#22C55E"></div><span class="token-name">--color-success</span><span class="token-val">#22C55E</span></div>
+      <div class="token-row"><div class="token-dot" style="background:#EF4444"></div><span class="token-name">--color-error</span><span class="token-val">#EF4444</span></div>
+      <div class="token-row"><div class="token-dot" style="background:#FFBA0D"></div><span class="token-name">--color-warning</span><span class="token-val">#FFBA0D</span></div>
+      <div class="token-row"><div class="token-dot" style="background:#7F21FF"></div><span class="token-name">--color-info</span><span class="token-val">#7F21FF</span></div>
+    </div>
+
+    <div class="rules-grid">
+      <div class="rule do"><span class="rule-icon">✅</span>Always use CSS tokens — never hardcode hex values in components</div>
+      <div class="rule do"><span class="rule-icon">✅</span>All pages use <code style="font-family:var(--font-mono);font-size:11px;color:var(--color-accent-pink)">--color-bg-page</code> (#0A0A0A) — always dark</div>
+      <div class="rule dont"><span class="rule-icon">❌</span>Never use white or light backgrounds — dark-only brand</div>
+      <div class="rule dont"><span class="rule-icon">❌</span>Never use more than 2 accent colors per section (outside gradients)</div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 TYPOGRAPHY -->
+<section class="section" id="typography">
+  <div class="container">
+    <div class="section-label">03 — Typography</div>
+    <h2 class="section-title">Typography</h2>
+    <p class="section-desc">Satoshi is the sole brand typeface — headings, body, labels, UI. No secondary font. JetBrains Mono for code only.</p>
+
+    <div class="type-showcase">
+      <div class="type-row">
+        <div class="type-meta"><strong>Hero</strong>Satoshi 700<br/>clamp(42px → 88px)<br/>tracking: −0.02em</div>
+        <div class="type-sample-hero">Building Moonshots</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>H2 Section</strong>Satoshi 700<br/>clamp(24px → 42px)<br/>tracking: −0.02em</div>
+        <div class="type-sample-h2">Blockchain Analytics</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>H3 Sub-section</strong>Satoshi 500<br/>clamp(20px → 30px)</div>
+        <div class="type-sample-h3">Lightning Network Technology</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>Body</strong>Satoshi 300<br/>16px · 1.75 leading</div>
+        <div class="type-sample-body">Unlocking blockchain potential with cutting-edge software, analytics, and business intelligence for OTC trading firms worldwide.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>Label</strong>Satoshi 700<br/>11px · uppercase<br/>tracking: 0.08em</div>
+        <div class="type-sample-label">Analytics Technology · Services · OTC Trading</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>Mono</strong>JetBrains Mono<br/>14px · code only</div>
+        <div class="type-sample-mono">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+      </div>
+    </div>
+
+    <div class="section-label">Type Scale Tokens</div>
+    <div class="scale-table">
+      <div class="scale-row"><span class="scale-token">--text-hero</span><span style="font-size:20px;font-weight:700">Hero Display</span><span class="scale-val">clamp(42→88px)</span></div>
+      <div class="scale-row"><span class="scale-token">--text-h1</span><span style="font-size:18px;font-weight:700">Page Title</span><span class="scale-val">clamp(32→60px)</span></div>
+      <div class="scale-row"><span class="scale-token">--text-h2</span><span style="font-size:16px;font-weight:600">Section Heading</span><span class="scale-val">clamp(24→42px)</span></div>
+      <div class="scale-row"><span class="scale-token">--text-h3</span><span style="font-size:14px;font-weight:500">Sub-section</span><span class="scale-val">clamp(20→30px)</span></div>
+      <div class="scale-row"><span class="scale-token">--text-h4</span><span style="font-size:13px;font-weight:500">Card Title</span><span class="scale-val">clamp(16→22px)</span></div>
+      <div class="scale-row"><span class="scale-token">--text-lg</span><span style="font-size:13px">Lead / Feature Body</span><span class="scale-val">18px</span></div>
+      <div class="scale-row"><span class="scale-token">--text-base</span><span style="font-size:12px">Body Default</span><span class="scale-val">16px</span></div>
+      <div class="scale-row"><span class="scale-token">--text-sm</span><span style="font-size:12px">Secondary / Caption</span><span class="scale-val">14px</span></div>
+      <div class="scale-row"><span class="scale-token">--text-xs</span><span style="font-size:11px">Labels · Metadata · Legal</span><span class="scale-val">12px</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 SPACING -->
+<section class="section" id="spacing">
+  <div class="container">
+    <div class="section-label">04 — Spacing</div>
+    <h2 class="section-title">Spacing & Layout</h2>
+    <p class="section-desc">8px base unit. All spacing, padding, and gaps should use tokens.</p>
+
+    <div class="section-label">Spacing Scale</div>
+    <div class="spacing-viz">
+      <div class="space-row"><span class="space-token">--space-1</span><div class="space-bar-wrap"><div class="space-bar" style="width:4px"></div></div><span class="space-px">4px</span></div>
+      <div class="space-row"><span class="space-token">--space-2</span><div class="space-bar-wrap"><div class="space-bar" style="width:8px"></div></div><span class="space-px">8px</span></div>
+      <div class="space-row"><span class="space-token">--space-3</span><div class="space-bar-wrap"><div class="space-bar" style="width:12px"></div></div><span class="space-px">12px</span></div>
+      <div class="space-row"><span class="space-token">--space-4</span><div class="space-bar-wrap"><div class="space-bar" style="width:16px"></div></div><span class="space-px">16px</span></div>
+      <div class="space-row"><span class="space-token">--space-6</span><div class="space-bar-wrap"><div class="space-bar" style="width:24px"></div></div><span class="space-px">24px</span></div>
+      <div class="space-row"><span class="space-token">--space-8</span><div class="space-bar-wrap"><div class="space-bar" style="width:32px"></div></div><span class="space-px">32px</span></div>
+      <div class="space-row"><span class="space-token">--space-12</span><div class="space-bar-wrap"><div class="space-bar" style="width:48px"></div></div><span class="space-px">48px</span></div>
+      <div class="space-row"><span class="space-token">--space-16</span><div class="space-bar-wrap"><div class="space-bar" style="width:64px"></div></div><span class="space-px">64px</span></div>
+      <div class="space-row"><span class="space-token">--space-24</span><div class="space-bar-wrap"><div class="space-bar" style="width:96px"></div></div><span class="space-px">96px</span></div>
+    </div>
+
+    <div class="section-label">Border Radius</div>
+    <div class="radius-showcase">
+      <div class="radius-item"><div class="radius-box" style="border-radius:4px"></div><div class="radius-label">--radius-sm<br/>4px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:8px"></div><div class="radius-label">--radius-md<br/>8px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:12px"></div><div class="radius-label">--radius-lg<br/>12px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:16px"></div><div class="radius-label">--radius-xl<br/>16px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:24px"></div><div class="radius-label">--radius-2xl<br/>24px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:9999px"></div><div class="radius-label">--radius-full<br/>pill</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 COMPONENTS -->
+<section class="section" id="components">
+  <div class="container">
+    <div class="section-label">05 — Components</div>
+    <h2 class="section-title">Component Patterns</h2>
+    <p class="section-desc">Live, interactive component previews. All built with brand tokens.</p>
+
+    <div class="component-section">
+
+      <!-- BUTTONS -->
+      <div class="component-block">
+        <div class="component-header">
+          <span class="component-name">Buttons</span>
+          <span style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-muted)">.btn-primary · .btn-secondary · .btn-ghost</span>
+        </div>
+        <div class="component-body">
+          <div class="btn-row">
+            <button class="btn btn-primary">Launch →</button>
+            <button class="btn btn-secondary">Learn More</button>
+            <button class="btn btn-ghost">View Details</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARDS -->
+      <div class="component-block">
+        <div class="component-header">
+          <span class="component-name">Service Cards</span>
+          <span style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-muted)">.card · .card-feat</span>
+        </div>
+        <div class="component-body">
+          <div class="card-grid">
+            <div class="card">
+              <div class="card-icon">📡</div>
+              <div class="card-title">Analytics Technology</div>
+              <div class="card-body">Deep insights into Bitcoin transactions and on-chain activity for AML & risk teams.</div>
+            </div>
+            <div class="card card-feat">
+              <div class="card-icon">⚡</div>
+              <div class="card-title">Lightning Technology</div>
+              <div class="card-body">Expert Lightning Network integration for fast, low-cost, secure payments.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🛠</div>
+              <div class="card-title">Software Development</div>
+              <div class="card-body">Cutting-edge development tailored to businesses dealing in digital assets.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="component-block">
+        <div class="component-header">
+          <span class="component-name">Stats Bar</span>
+          <span style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-muted)">.stat-num · gradient text</span>
+        </div>
+        <div class="component-body">
+          <div class="stats-row">
+            <div class="stat"><div class="stat-num">100M+</div><div class="stat-lbl">Transactions</div></div>
+            <div class="stat"><div class="stat-num">5+</div><div class="stat-lbl">Years Experience</div></div>
+            <div class="stat"><div class="stat-num">100+</div><div class="stat-lbl">Network Nodes</div></div>
+            <div class="stat"><div class="stat-num">500+</div><div class="stat-lbl">Clients Served</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NAV -->
+      <div class="component-block">
+        <div class="component-header">
+          <span class="component-name">Navigation Bar</span>
+          <span style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-muted)">sticky · blur backdrop · z-100</span>
+        </div>
+        <div class="component-body">
+          <div class="nav-demo">
+            <span class="nav-demo-logo">☾ Lunar Rails</span>
+            <ul class="nav-demo-links">
+              <li>Solutions</li><li>Company</li><li>Blog</li><li>Contact</li>
+            </ul>
+            <button class="btn btn-primary" style="padding:7px 16px;font-size:10px">Launch →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUTS -->
+      <div class="component-block">
+        <div class="component-header">
+          <span class="component-name">Form Inputs</span>
+          <span style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-muted)">.input · focus state</span>
+        </div>
+        <div class="component-body">
+          <div class="input-demo">
+            <div class="field">
+              <label>Company Name</label>
+              <input class="input" type="text" placeholder="Acme Trading LLC"/>
+            </div>
+            <div class="field">
+              <label>Email Address</label>
+              <input class="input" type="email" placeholder="you@company.com"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRADIENT TEXT -->
+      <div class="component-block">
+        <div class="component-header">
+          <span class="component-name">Gradient Text — Signature Pattern</span>
+          <span style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-muted)">background-clip: text</span>
+        </div>
+        <div class="component-body">
+          <div class="gradient-text-demo">Building Moonshots</div>
+          <hr class="divider-brand" style="margin-top:var(--space-6)"/>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 06 MOTION -->
+<section class="section" id="motion">
+  <div class="container">
+    <div class="section-label">06 — Motion</div>
+    <h2 class="section-title">Motion & Animation</h2>
+    <p class="section-desc">Snappy spring easing. Staggered entry reveals. Glow pulse on hover.</p>
+
+    <div class="motion-grid">
+      <div class="motion-card">
+        <div class="motion-label">Fast</div>
+        <div class="motion-value">150ms</div>
+        <div class="motion-desc">Hover states, color transitions</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Base</div>
+        <div class="motion-value">250ms</div>
+        <div class="motion-desc">Transitions, element reveals</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Slow</div>
+        <div class="motion-value">400ms</div>
+        <div class="motion-desc">Page elements, modals</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Hero</div>
+        <div class="motion-value">800ms</div>
+        <div class="motion-desc">Hero entry animations</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Easing</div>
+        <div class="motion-value" style="font-size:10px">cubic-bezier(.16,1,.3,1)</div>
+        <div class="motion-desc">Spring — all interactive elements</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Stagger</div>
+        <div class="motion-value">+100ms</div>
+        <div class="motion-desc">Per element delay increment</div>
+      </div>
+    </div>
+
+    <div class="section-label">fadeUp — Live Demo</div>
+    <div class="anim-demo">
+      <button class="anim-btn" onclick="triggerAnim()">▶ Play fadeUp</button>
+      <button class="anim-btn" onclick="resetAnim()">↺ Reset</button>
+    </div>
+    <div class="anim-stage" id="animStage">
+      <div class="anim-box" id="b1">01</div>
+      <div class="anim-box" id="b2">02</div>
+      <div class="anim-box" id="b3">03</div>
+      <div class="anim-box" id="b4">04</div>
+      <div class="anim-box" id="b5">05</div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 VISUAL -->
+<section class="section" id="visual">
+  <div class="container">
+    <div class="section-label">07 — Visual Language</div>
+    <h2 class="section-title">Visual Language & Imagery</h2>
+
+    <div class="aesthetic-block">
+      <div class="aesthetic-title">Neon Cyberpunk × Space-Age Futuristic</div>
+      <div class="aesthetic-desc">Dark, near-black backgrounds with purple/pink ambient glow. Glowing gradients used as light sources, not decoration. Geometric abstract shapes as background texture at low opacity (0.03–0.08). Purple/pink neon glow on interactive and featured elements.</div>
+    </div>
+
+    <div class="section-label">Approved Visual Motifs</div>
+    <div class="motifs-grid">
+      <div class="motif-card"><span class="motif-emoji">🌕</span><div class="motif-name">Moon</div><div class="motif-use">Hero sections, background texture</div></div>
+      <div class="motif-card"><span class="motif-emoji">🚀</span><div class="motif-name">Rocket Ship</div><div class="motif-use">Product features, launch CTAs</div></div>
+      <div class="motif-card"><span class="motif-emoji">🤖</span><div class="motif-name">AI Robot</div><div class="motif-use">Technology & analytics sections</div></div>
+      <div class="motif-card"><span class="motif-emoji">👨‍🚀</span><div class="motif-name">Astronaut</div><div class="motif-use">Hero video, brand photography</div></div>
+      <div class="motif-card"><span class="motif-emoji">🌌</span><div class="motif-name">Outer Space</div><div class="motif-use">Full-bleed backgrounds</div></div>
+      <div class="motif-card"><span class="motif-emoji">🔷</span><div class="motif-name">Geometry</div><div class="motif-use">BG patterns, section overlays</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 ANATOMY -->
+<section class="section" id="anatomy">
+  <div class="container">
+    <div class="section-label">08 — Page Anatomy</div>
+    <h2 class="section-title">Page Anatomy</h2>
+    <p class="section-desc">Standard section order for all Lunar Rails web pages.</p>
+
+    <div class="anatomy-diagram">
+      <div class="anatomy-zone" style="background:rgba(127,33,255,.05);border-color:var(--color-border-accent)">
+        <span class="anatomy-zone-name">NAV</span>
+        <span class="anatomy-zone-desc">Sticky · blur backdrop · z-100 · logo + links + CTA</span>
+      </div>
+      <div class="anatomy-zone hero-zone">
+        <span class="anatomy-zone-name">HERO</span>
+        <span class="anatomy-zone-desc">100vh · video or gradient bg · H1 gradient text · subtitle · primary + secondary CTA · partner logos</span>
+      </div>
+      <div class="anatomy-zone">
+        <span class="anatomy-zone-name">WHAT WE DO</span>
+        <span class="anatomy-zone-desc">3-column feature grid · icon + H4 + description per card</span>
+      </div>
+      <div class="anatomy-zone">
+        <span class="anatomy-zone-name">STATS BAR</span>
+        <span class="anatomy-zone-desc">4 gradient numbers · full width · 100M+ · 5+ years · etc.</span>
+      </div>
+      <div class="anatomy-zone">
+        <span class="anatomy-zone-name">WHO WE WORK WITH</span>
+        <span class="anatomy-zone-desc">2-column or alternating · AML · PSP · OTC · BI · Financial</span>
+      </div>
+      <div class="anatomy-zone">
+        <span class="anatomy-zone-name">FAQ</span>
+        <span class="anatomy-zone-desc">Accordion pattern · max 6 questions</span>
+      </div>
+      <div class="anatomy-zone" style="background:rgba(127,33,255,.05);border-color:var(--color-border-accent)">
+        <span class="anatomy-zone-name">CTA BANNER</span>
+        <span class="anatomy-zone-desc">"Ready to launch?" · full-width · gradient bg · contact form</span>
+      </div>
+      <div class="anatomy-zone">
+        <span class="anatomy-zone-name">FOOTER</span>
+        <span class="anatomy-zone-desc">Dark bg · logo · Company links · Other links · legal text</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 DO's & DON'Ts -->
+<section class="section" id="rules">
+  <div class="container">
+    <div class="section-label">09 — AI Rules</div>
+    <h2 class="section-title">Do's and Don'ts for AI</h2>
+    <p class="section-desc">Rules the AI must follow when building any Lunar Rails product, page, or component.</p>
+
+    <div class="dd-grid">
+      <div class="dd-col">
+        <div class="dd-header do">✅ DO</div>
+        <ul class="dd-list do">
+          <li>Use <code style="font-family:var(--font-mono);font-size:11px;color:var(--color-accent-primary)">--gradient-brand</code> on hero text, CTAs, and stat numbers</li>
+          <li>Use <code style="font-family:var(--font-mono);font-size:11px;color:var(--color-accent-primary)">--color-bg-page</code> (#0A0A0A) as base background — always dark</li>
+          <li>Use Satoshi for ALL text — sole brand typeface across headings, body, and UI</li>
+          <li>Add <code style="font-family:var(--font-mono);font-size:11px;color:var(--color-accent-primary)">backdrop-filter: blur()</code> on nav bar and modals</li>
+          <li>Use <code style="font-family:var(--font-mono);font-size:11px;color:var(--color-accent-primary)">fadeUp</code> with staggered delays on section and card entries</li>
+          <li>Apply <code style="font-family:var(--font-mono);font-size:11px;color:var(--color-accent-primary)">--shadow-glow-purple</code> on hover states for cards and buttons</li>
+          <li>Use <code style="font-family:var(--font-mono);font-size:11px;color:var(--color-accent-primary)">border: 1px solid var(--color-border-default)</code> on all cards</li>
+          <li>Keep copy bold and direct: "Launch" · "Build" · "Trace" · "Analyse"</li>
+          <li>Align all spacing to the 8px token scale</li>
+        </ul>
+      </div>
+      <div class="dd-col">
+        <div class="dd-header dont">❌ DON'T</div>
+        <ul class="dd-list dont">
+          <li>Use light or white backgrounds — dark-theme-only brand</li>
+          <li>Use Montserrat, Inter, Roboto, Arial — Satoshi is the only brand typeface</li>
+          <li>Apply gradient to body text, captions, or anything below --text-h3</li>
+          <li>Use purple gradients on white/light surfaces (classic AI cliché)</li>
+          <li>Use glassmorphism as primary UI pattern — nav only</li>
+          <li>Hard-code hex values — always use CSS tokens</li>
+          <li>Use more than 2 accent colors per section (outside gradient elements)</li>
+          <li>Add drop shadows to text</li>
+          <li>Use border-radius above --radius-2xl (24px) on non-pill elements</li>
+          <li>Mix neon and pastel colors — palette is dark + vivid, never soft</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 COPY -->
+<section class="section" id="copy">
+  <div class="container">
+    <div class="section-label">10 — Copy</div>
+    <h2 class="section-title">Key Copy & Messaging</h2>
+    <p class="section-desc">Approved copy for consistent brand communication across all surfaces.</p>
+    <table class="copy-table">
+      <thead>
+        <tr><th>Context</th><th>Approved Copy</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Hero Headline</td><td><code>"Building Moonshots"</code></td></tr>
+        <tr><td>Hero Subtitle</td><td><code>"Unlocking blockchain potential with cutting-edge software, analytics, and business intelligence."</code></td></tr>
+        <tr><td>CTA Primary</td><td><code>"Get Started"</code> · <code>"Launch"</code> · <code>"Contact Us"</code></td></tr>
+        <tr><td>CTA Secondary</td><td><code>"Learn More"</code></td></tr>
+        <tr><td>Footer CTA</td><td><code>"Ready to launch?"</code></td></tr>
+        <tr><td>Services</td><td>Analytics Technology · Lightning Technology · Software Development · Consulting & Cost Control</td></tr>
+        <tr><td>Legal</td><td>OTC Services DMCC · DMCC License No. DMCC-400801 · Dubai, UAE</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 11 TECH -->
+<section class="section" id="tech">
+  <div class="container">
+    <div class="section-label">11 — Tech Stack</div>
+    <h2 class="section-title">Tech Stack Preferences</h2>
+    <p class="section-desc">Preferred technologies when building Lunar Rails products.</p>
+    <div class="tech-grid">
+      <div class="tech-card"><div class="tech-layer">Framework</div><div class="tech-value">React + TypeScript</div><div class="tech-sub">Next.js for web apps</div></div>
+      <div class="tech-card"><div class="tech-layer">Styling</div><div class="tech-value">Tailwind CSS</div><div class="tech-sub">or CSS Modules — map to tokens</div></div>
+      <div class="tech-card"><div class="tech-layer">Animation</div><div class="tech-value">Framer Motion</div><div class="tech-sub">CSS keyframes for simple cases</div></div>
+      <div class="tech-card"><div class="tech-layer">Data Viz</div><div class="tech-value">Recharts / D3</div><div class="tech-sub">Blockchain & analytics data</div></div>
+      <div class="tech-card"><div class="tech-layer">Primary Font</div><div class="tech-value">Satoshi</div><div class="tech-sub">via api.fontshare.com — all weights</div></div>
+      <div class="tech-card"><div class="tech-layer">Mono Font</div><div class="tech-value">JetBrains Mono</div><div class="tech-sub">Code & blockchain addresses only</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-logo">☾ Lunar Rails</div>
+    <div class="footer-desc">Design System & AI Context Guide — the single source of truth for all Lunar Rails UI decisions.</div>
+    <div class="footer-legal">OTC Services DMCC · DMCC License No. DMCC-400801 · Dubai, UAE · lunarrails.io</div>
+  </div>
+</footer>
+
+</div><!-- /page -->
+
+<script>
+// Stagger animation demo
+function triggerAnim() {
+  const boxes = [1,2,3,4,5].map(n => document.getElementById('b'+n));
+  boxes.forEach(b => { b.classList.remove('visible'); void b.offsetWidth; });
+  boxes.forEach((b, i) => {
+    setTimeout(() => b.classList.add('visible'), i * 120);
+  });
+}
+function resetAnim() {
+  [1,2,3,4,5].forEach(n => document.getElementById('b'+n).classList.remove('visible'));
+}
+
+// Intersection observer for scroll reveals
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.animation = 'fadeUp 0.6s cubic-bezier(.16,1,.3,1) forwards';
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.toc-item, .brand-card, .swatch, .type-row, .scale-row, .anatomy-zone, .motif-card, .tech-card, .component-block').forEach(el => {
+  el.style.opacity = '0';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
